@@ -55,7 +55,7 @@ public:
     QString  udp265VideoSource      () { return videoSourceUDPH265; }
     QString  tcpVideoSource         () { return videoSourceTCP; }
     QString  mpegtsVideoSource      () { return videoSourceMPEGTS; }
-    QString. launchStrVideoSource   () { return videoSourceLaunchStr; }
+    QString  launchStrVideoSource   () { return videoSourceLaunchStr; }
     QString  disabledVideoSource    () { return videoDisabled; }
 
     static constexpr const char* videoSourceNoVideo           = QT_TRANSLATE_NOOP("VideoSettings", "No Video Available");
