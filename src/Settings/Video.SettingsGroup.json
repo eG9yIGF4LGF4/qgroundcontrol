@@ -24,6 +24,13 @@
     "type":             "string",
     "default":     ""
 },
+    
+    "name":             "launchStr",
+    "shortDesc": "gst-launch Launch String",
+    "longDesc":  "Pipeline launch string as an argument to gst-launch command url",
+    "type":             "string",
+    "default":     ""
+},
 {
     "name":             "tcpUrl",
     "shortDesc": "Video TCP Url",
