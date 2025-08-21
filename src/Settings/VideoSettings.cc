@@ -28,6 +28,7 @@ DECLARE_SETTINGGROUP(Video, "Video")
     videoSourceList.append(videoSourceUDPH264);
     videoSourceList.append(videoSourceUDPH265);
     videoSourceList.append(videoSourceTCP);
+    videoSourceList.append(videoSourceLaunchStr);
     videoSourceList.append(videoSourceMPEGTS);
     videoSourceList.append(videoSource3DRSolo);
     videoSourceList.append(videoSourceParrotDiscovery);
@@ -201,6 +202,12 @@ bool VideoSettings::streamConfigured(void)
     //-- If RTSP, check for URL
     if(vSource == videoSourceRTSP) {
         qCDebug(VideoManagerLog) << "Testing configuration for RTSP Stream:" << rtspUrl()->rawValue().toString();
+        return !rtspUrl()->rawValue().toString().isEmpty();
+    }
+
+    //-- If LaunchStr, check for LaunchStr value
+    if(vSource == videoSourceLaunchStr) {
+        qCDebug(VideoManagerLog) << "Testing configuration for LaunchStr:" << launchStr()->rawValue().toString();
         return !rtspUrl()->rawValue().toString().isEmpty();
     }
     //-- If TCP, check for URL
