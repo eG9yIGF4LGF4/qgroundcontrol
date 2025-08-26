@@ -73,7 +73,7 @@ void GstVideoReceiver::start(uint32_t timeout)
     qCDebug(GstVideoReceiverLog) << "Starting" << _uri << ", lowLatency" << lowLatency() << ", timeout" << _timeout;
 
     _endOfStream = false;
-
+ 
     bool running = false;
     bool pipelineUp = false;
 
@@ -131,11 +131,12 @@ void GstVideoReceiver::start(uint32_t timeout)
                      nullptr);
 
         _pipeline = gst_pipeline_new("receiver");
+
         if (!_pipeline) {
             qCCritical(GstVideoReceiverLog) << "gst_pipeline_new() failed";
             break;
         }
-
+ 
         g_object_set(_pipeline,
                      "message-forward", TRUE,
                      nullptr);
@@ -638,6 +639,7 @@ GstElement *GstVideoReceiver::_makeSource(const QString &input)
     const bool isUdp265 = input.contains("udp265://", Qt::CaseInsensitive);
     const bool isUdpMPEGTS = input.contains("mpegts://", Qt::CaseInsensitive);
     const bool isTcpMPEGTS = input.contains("tcp://", Qt::CaseInsensitive);
+    const bool isLaunchStr = input.contains("gst://", Qt::CaseInsensitive);
 
     GstElement *source = nullptr;
     GstElement *buffer = nullptr;
@@ -645,6 +647,7 @@ GstElement *GstVideoReceiver::_makeSource(const QString &input)
     GstElement *parser = nullptr;
     GstElement *bin = nullptr;
     GstElement *srcbin = nullptr;
+    GError *error = nullptr;
 
     do {
         if (isRtsp) {
@@ -709,6 +712,23 @@ GstElement *GstVideoReceiver::_makeSource(const QString &input)
                              nullptr);
                 gst_clear_caps(&caps);
             }
+        } else if (isLaunchStr) { 
+            QString launchStr = (QString)input;
+            launchStr.replace("gst://", "", Qt::CaseInsensitive);
+            //source = gst_parse_bin_from_description(launchStr.toUtf8().constData(), true, &error);
+            source = gst_parse_launch(launchStr.toUtf8().constData(), &error);
+            
+            qCInfo(GstVideoReceiverLog) << " Setting up pipeline: " << launchStr;
+
+            if (error) {
+                qCCritical(GstVideoReceiverLog) << "ERROR: " << error->message;
+                g_error_free (error);
+            }
+
+            if (!source) {
+                qCCritical(GstVideoReceiverLog) << "gst_element_factory_make('videotestsrc') failed";
+                break;
+            }
         } else {
             qCDebug(GstVideoReceiverLog) << "URI is not recognized";
         }
@@ -719,6 +739,7 @@ GstElement *GstVideoReceiver::_makeSource(const QString &input)
         }
 
         bin = gst_bin_new("sourcebin");
+            
         if (!bin) {
             qCCritical(GstVideoReceiverLog) << "gst_bin_new('sourcebin') failed";
             break;
