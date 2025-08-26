@@ -625,20 +625,6 @@ gboolean GstVideoReceiver::_filterParserCaps(GstElement *bin, GstPad *pad, GstEl
     return FALSE;
 }
 
-bool GstVideoReceiver::_isLaunchStr(const QString &input)
-{
-    return input.contains("gst://", Qt::CaseInsensitive);
-}
-
-GstElement *GstVideoReceiver::_getSource(GstElement *pipeline)
-{
-    GstElement *e;
-    
-    e = gst_bin_get_by_name (GST_BIN (pipeline), "source");
-
-    return e; 
-}
-
 GstElement *GstVideoReceiver::_makeSource(const QString &input)
 {
     if (input.isEmpty()) {
