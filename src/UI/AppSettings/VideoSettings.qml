@@ -67,7 +67,6 @@ SettingsPage {
         LabelledFactTextArea {
             Layout.fillWidth:           true
             height:                     300          
-            textFieldPreferredWidth:    _urlFieldWidth
             label:                      qsTr("Launch String")
             fact:                       _videoSettings.launchStr
             visible:                    _isLaunchStr && _videoSettings.launchStr.visible
