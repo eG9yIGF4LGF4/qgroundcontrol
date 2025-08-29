@@ -263,6 +263,7 @@ if(GStreamer_USE_STATIC_LIBS)
         udp
         videoparsersbad
         vpx
+        rswebrtc
     )
     if(ANDROID)
         list(APPEND GSTREAMER_PLUGINS androidmedia) # vulkan
