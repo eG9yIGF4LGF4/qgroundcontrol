@@ -242,6 +242,8 @@ if(GStreamer_USE_STATIC_LIBS)
         # gstreamer-gl-egl-1.0
         # gstreamer-gl-wayland-1.0
         # gstreamer-gl-x11-1.0
+        gstreamer-webrtc-1.0 
+        gstreamer-sdp-1.0
     )
 
     set(GSTREAMER_PLUGINS
