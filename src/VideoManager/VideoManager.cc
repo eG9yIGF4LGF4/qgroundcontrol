@@ -53,11 +53,6 @@ VideoManager::VideoManager(QObject *parent)
 
     (void) qRegisterMetaType<VideoReceiver::STATUS>("STATUS");
 
-    // delay(()=>{
-
-    qt_static_metacall()
-    // }, 5000);
-
 #ifdef QGC_GST_STREAMING
     if (!GStreamer::initialize()) {
         qCCritical(VideoManagerLog) << "Failed To Initialize GStreamer";
