@@ -114,7 +114,7 @@ void VideoManager::init(QQuickWindow *window)
     _initialized = true;
 
     if(this->hasVideo()) {
-        this->setFullScreen(true);
+        this->setfullScreen(true);
     }
 }
 
