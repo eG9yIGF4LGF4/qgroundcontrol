@@ -19,7 +19,7 @@ RUN apt-get update && \
         build-essential \
         curl \
         unzip && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*-
 
 # ---------- UTF-8 locale ----------
 RUN sed -i 's/^# *\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen && \
@@ -42,7 +42,7 @@ ENV QT_ROOT_DIR=/opt/Qt/6.8.3/gcc_64
 ENV PATH=$QT_ROOT_DIR/bin:$PATH
 
 # ---------- Git safe directory (avoids “detected dubious ownership”) ----------
-RUN git config --global --add safe.directory /project/source
+RUN git config --global --add safe.directory /project/source 
 
 # ---------- Work directories ----------
 # They will be mounted as volumes when you run the container
