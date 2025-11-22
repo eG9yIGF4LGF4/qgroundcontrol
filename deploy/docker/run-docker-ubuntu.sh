@@ -13,11 +13,4 @@ BUILD_DIR="${SOURCE_DIR}/build"
 docker build --file "${DOCKERFILE_PATH}" -t "${IMAGE_NAME}" "${SOURCE_DIR}"
 
 # Run the Docker container with necessary permissions and volume mounts
-docker run \
-  --rm \
-  --cap-add SYS_ADMIN \
-  --device /dev/fuse \
-  --security-opt apparmor:unconfined \
-  -v "${SOURCE_DIR}:/project/source" \
-  -v "${BUILD_DIR}:/project/build" \
-  "${IMAGE_NAME}"
+docker run --rm --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined -v "${SOURCE_DIR}:/project/source" -v "${BUILD_DIR}:/project/build" "${IMAGE_NAME}"
