@@ -6486,21 +6486,26 @@ Click Ok to start the auto-tuning process.
     </message>
     <message>
         <location filename="../src/FlightDisplay/FlyViewMap.qml" line="730"/>
-        <source>Set Estimator Origin</source>
+        <source>Set vehicle here</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/FlightDisplay/FlyViewMap.qml" line="740"/>
-        <source>Set Heading</source>
+        <source>Set Estimator Origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/FlightDisplay/FlyViewMap.qml" line="750"/>
+        <source>Set Heading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/FlightDisplay/FlyViewMap.qml" line="760"/>
         <source>Lat: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/FlightDisplay/FlyViewMap.qml" line="751"/>
+        <location filename="../src/FlightDisplay/FlyViewMap.qml" line="761"/>
         <source>Lon: %1</source>
         <translation type="unfinished"></translation>
     </message>
