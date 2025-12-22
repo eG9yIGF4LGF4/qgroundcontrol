@@ -220,11 +220,7 @@ GPSBaseStationSupport *GPSProvider::_connectGPS()
         baudrate = 0;
         break;
     case GPSType::u_blox:
-
-        // auto settings = {7, kGPSHeadingOffset, 0, false, GPSDriverUBX::UBXMode::RoverWithMovingBase};
-        // gpsDriver = new GPSDriverUBX(GPSDriverUBX::Interface::UART, &_callbackEntry, this, &_sensorGps, &_satelliteInfo, &settings);
         gpsDriver = new GPSDriverUBX(GPSDriverUBX::Interface::UART, &_callbackEntry, this, &_sensorGps, &_satelliteInfo);
-
 
         baudrate = 0;
         break;
