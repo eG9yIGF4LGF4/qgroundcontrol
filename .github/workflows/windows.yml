@@ -72,6 +72,7 @@ jobs:
       #   run: ./tools/setup/install-dependencies-windows.ps1 -Force
 
       - name: Install GStreamer
+        timeout-minutes: 10
         if: matrix.arch == 'win64_msvc2022_64'
         uses: blinemedical/setup-gstreamer@v1
         with:
