@@ -3683,6 +3683,42 @@ void Vehicle::doSetHome(const QGeoCoordinate& coord)
     }
 }
 
+void Vehicvle::doSetPosition(const QGeoCoordiate& coord)
+{
+    if (coord.isValid()) {
+        mavlink_message_t msg;
+        mavlink_gps_input_t gps_input = {};
+        
+        gps_input.time_usec = QGC::groundTimeUsecs();
+        gps_input.gps_id = 0;  // GPS ID
+        gps_input.ignore_flags = 0;  // Use all fields
+        gps_input.time_week_ms = 0;  // GPS time (optional)
+        gps_input.time_week = 0;     // GPS week (optional)
+        gps_input.fix_type = 3;      // 3D fix
+        gps_input.lat = static_cast<int32_t>(coord.latitude() * 1e7);
+        gps_input.lon = static_cast<int32_t>(coord.longitude() * 1e7);
+        gps_input.alt = static_cast<float>(coord.altitude());
+        gps_input.hdop = 1.0f;       // Horizontal dilution of precision
+        gps_input.vdop = 1.0f;       // Vertical dilution of precision
+        gps_input.vn = 0.0f;         // North velocity
+        gps_input.ve = 0.0f;         // East velocity
+        gps_input.vd = 0.0f;         // Down velocity
+        gps_input.speed_accuracy = 0.5f;
+        gps_input.horiz_accuracy = 1.0f;
+        gps_input.vert_accuracy = 1.0f;
+        gps_input.satellites_visible = 10;
+        
+        mavlink_msg_gps_input_encode(
+            _mavlink->getSystemId(),
+            _mavlink->getComponentId(),
+            &msg,
+            &gps_input
+        );
+
+        sendMessageOnLinkThreadSafe(_vehicleLinkManager->primaryLink().lock().get(), msg);
+    }
+}
+
 // This will be called after our query started in doSetHome arrives
 void Vehicle::_doSetHomeTerrainReceived(bool success, QList<double> heights)
 {

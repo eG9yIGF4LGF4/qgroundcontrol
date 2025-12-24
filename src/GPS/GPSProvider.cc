@@ -221,7 +221,6 @@ GPSBaseStationSupport *GPSProvider::_connectGPS()
         break;
     case GPSType::u_blox:
         gpsDriver = new GPSDriverUBX(GPSDriverUBX::Interface::UART, &_callbackEntry, this, &_sensorGps, &_satelliteInfo);
-
         baudrate = 0;
         break;
     case GPSType::femto:
