@@ -416,6 +416,8 @@ public:
     /// Set home from flight map coordinate
     Q_INVOKABLE void doSetHome(const QGeoCoordinate& coord);
 
+    Q_INVOKABLE void doSetPosition(const QGeoCoordinate& coord);
+
     /// Save the joystick enable setting to the settings group
     Q_INVOKABLE void saveJoystickSettings(void);
 

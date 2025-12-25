@@ -17,6 +17,17 @@
 
 namespace QGC {
 
+quint64 groundTimeUsecs()
+{
+    return groundTimeMilliseconds() * 1000;
+}
+
+quint64 groundTimeMilliseconds()
+{
+    return static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
+}
+
+
 float limitAngleToPMPIf(double angle)
 {
     if ((angle > (-20*M_PI)) && (angle < (20*M_PI)))

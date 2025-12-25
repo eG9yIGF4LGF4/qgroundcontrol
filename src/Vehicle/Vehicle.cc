@@ -3683,12 +3683,17 @@ void Vehicle::doSetHome(const QGeoCoordinate& coord)
     }
 }
 
-void Vehicvle::doSetPosition(const QGeoCoordiate& coord)
+void Vehicle::doSetPosition(const QGeoCoordinate& coord)
 {
     if (coord.isValid()) {
         mavlink_message_t msg;
         mavlink_gps_input_t gps_input = {};
-        
+        SharedLinkInterfacePtr link = vehicleLinkManager()->primaryLink().lock();
+        if (!link) {
+            qCDebug(VehicleLog) << "sendParamMapRC: primary link gone!";
+            return;
+        }
+
         gps_input.time_usec = QGC::groundTimeUsecs();
         gps_input.gps_id = 0;  // GPS ID
         gps_input.ignore_flags = 0;  // Use all fields
@@ -3709,13 +3714,13 @@ void Vehicvle::doSetPosition(const QGeoCoordiate& coord)
         gps_input.satellites_visible = 10;
         
         mavlink_msg_gps_input_encode(
-            _mavlink->getSystemId(),
-            _mavlink->getComponentId(),
+            static_cast<uint8_t>(MAVLinkProtocol::instance()->getSystemId()),
+            static_cast<uint8_t>(MAVLinkProtocol::getComponentId()),
             &msg,
             &gps_input
         );
 
-        sendMessageOnLinkThreadSafe(_vehicleLinkManager->primaryLink().lock().get(), msg);
+        sendMessageOnLinkThreadSafe(link.get(), msg);
     }
 }
 
