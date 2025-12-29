@@ -3683,45 +3683,80 @@ void Vehicle::doSetHome(const QGeoCoordinate& coord)
     }
 }
 
+
+// In your Vehicle class header (.h file), add:
+QTimer* _gpsInjectionTimer;
+QGeoCoordinate _injectedPosition;
+
+// In your implementation:
 void Vehicle::doSetPosition(const QGeoCoordinate& coord)
 {
-    if (coord.isValid()) {
-        mavlink_message_t msg;
-        mavlink_gps_input_t gps_input = {};
-        SharedLinkInterfacePtr link = vehicleLinkManager()->primaryLink().lock();
-        if (!link) {
-            qCDebug(VehicleLog) << "sendParamMapRC: primary link gone!";
-            return;
-        }
-
-        gps_input.time_usec = QGC::groundTimeUsecs();
-        gps_input.gps_id = 0;  // GPS ID
-        gps_input.ignore_flags = 0;  // Use all fields
-        gps_input.time_week_ms = 0;  // GPS time (optional)
-        gps_input.time_week = 0;     // GPS week (optional)
-        gps_input.fix_type = 3;      // 3D fix
-        gps_input.lat = static_cast<int32_t>(coord.latitude() * 1e7);
-        gps_input.lon = static_cast<int32_t>(coord.longitude() * 1e7);
-        gps_input.alt = static_cast<float>(coord.altitude());
-        gps_input.hdop = 1.0f;       // Horizontal dilution of precision
-        gps_input.vdop = 1.0f;       // Vertical dilution of precision
-        gps_input.vn = 0.0f;         // North velocity
-        gps_input.ve = 0.0f;         // East velocity
-        gps_input.vd = 0.0f;         // Down velocity
-        gps_input.speed_accuracy = 0.5f;
-        gps_input.horiz_accuracy = 1.0f;
-        gps_input.vert_accuracy = 1.0f;
-        gps_input.satellites_visible = 10;
-        
-        mavlink_msg_gps_input_encode(
-            static_cast<uint8_t>(MAVLinkProtocol::instance()->getSystemId()),
-            static_cast<uint8_t>(MAVLinkProtocol::getComponentId()),
-            &msg,
-            &gps_input
-        );
-
-        sendMessageOnLinkThreadSafe(link.get(), msg);
+    if (!coord.isValid()) {
+        return;
     }
+    
+    _injectedPosition = coord;
+    
+    // Send immediately
+    sendGpsInput();
+    
+    // Set up continuous sending if not already running
+    if (!_gpsInjectionTimer) {
+        _gpsInjectionTimer = new QTimer(this);
+        connect(_gpsInjectionTimer, &QTimer::timeout, this, &Vehicle::sendGpsInput);
+        _gpsInjectionTimer->start(200); // Send at 5 Hz
+    }
+}
+
+void Vehicle::sendGpsInput()
+{
+    if (!_injectedPosition.isValid()) {
+        return;
+    }
+    
+    SharedLinkInterfacePtr link = vehicleLinkManager()->primaryLink().lock();
+    if (!link) {
+        return;
+    }
+
+    mavlink_message_t msg;
+    mavlink_gps_input_t gps_input = {};
+    
+    gps_input.time_usec = QGC::groundTimeUsecs();
+    gps_input.gps_id = 0;
+    gps_input.ignore_flags = 0;
+    gps_input.time_week_ms = 0;
+    gps_input.time_week = 0;
+    gps_input.fix_type = 3;
+    gps_input.lat = static_cast<int32_t>(_injectedPosition.latitude() * 1e7);
+    gps_input.lon = static_cast<int32_t>(_injectedPosition.longitude() * 1e7);
+    gps_input.alt = static_cast<float>(_injectedPosition.altitude());
+    gps_input.hdop = 0.8f;
+    gps_input.vdop = 0.8f;
+    gps_input.vn = 0.0f;
+    gps_input.ve = 0.0f;
+    gps_input.vd = 0.0f;
+    gps_input.speed_accuracy = 0.1f;
+    gps_input.horiz_accuracy = 0.5f;
+    gps_input.vert_accuracy = 0.5f;
+    gps_input.satellites_visible = 12;
+    
+    mavlink_msg_gps_input_encode(
+        id(),
+        MAV_COMP_ID_GPS,
+        &msg,
+        &gps_input
+    );
+    
+    sendMessageOnLinkThreadSafe(link.get(), msg);
+}
+
+void Vehicle::stopGpsInjection()
+{
+    if (_gpsInjectionTimer) {
+        _gpsInjectionTimer->stop();
+    }
+    _injectedPosition = QGeoCoordinate();
 }
 
 // This will be called after our query started in doSetHome arrives
