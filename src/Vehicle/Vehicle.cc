@@ -3734,7 +3734,7 @@ void Vehicle::sendGpsInput()
     gps_input.speed_accuracy = 0.1f;
     gps_input.horiz_accuracy = 0.5f;
     gps_input.vert_accuracy = 0.5f;
-    gps_input.satellites_visible = 12;
+    gps_input.satellites_visible = 30;
     
     mavlink_msg_gps_input_encode(
         id(),
