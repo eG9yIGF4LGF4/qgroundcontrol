@@ -3683,11 +3683,6 @@ void Vehicle::doSetHome(const QGeoCoordinate& coord)
     }
 }
 
-
-// In your Vehicle class header (.h file), add:
-QTimer* _gpsInjectionTimer;
-QGeoCoordinate _injectedPosition;
-
 // In your implementation:
 void Vehicle::doSetPosition(const QGeoCoordinate& coord)
 {

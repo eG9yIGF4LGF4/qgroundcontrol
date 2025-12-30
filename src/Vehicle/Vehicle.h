@@ -417,6 +417,11 @@ public:
     Q_INVOKABLE void doSetHome(const QGeoCoordinate& coord);
 
     Q_INVOKABLE void doSetPosition(const QGeoCoordinate& coord);
+    Q_INVOKABLE void stopGpsInjection();
+    Q_INVOKABLE void sendGpsInput();
+    // In your Vehicle class header (.h file), add:
+    QTimer* _gpsInjectionTimer;
+    QGeoCoordinate _injectedPosition;
 
     /// Save the joystick enable setting to the settings group
     Q_INVOKABLE void saveJoystickSettings(void);
