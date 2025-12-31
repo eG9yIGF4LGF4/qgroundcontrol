@@ -3683,6 +3683,83 @@ void Vehicle::doSetHome(const QGeoCoordinate& coord)
     }
 }
 
+// In your implementation:
+void Vehicle::doSetPosition(const QGeoCoordinate& coord)
+{
+    if (!coord.isValid()) {
+        return;
+    }
+    
+    _injectedPosition = coord;
+    
+    // Send immediately
+    sendGpsInput();
+    
+    // Set up continuous sending if not already running
+    if (!_gpsInjectionTimer) {
+        _gpsInjectionTimer = new QTimer(this);
+        connect(_gpsInjectionTimer, &QTimer::timeout, this, &Vehicle::sendGpsInput);
+        _gpsInjectionTimer->start(100); // Send at 10 Hz
+    }
+}
+
+void Vehicle::sendGpsInput()
+{
+    if (!_injectedPosition.isValid()) {
+        qCDebug(VehicleLog) << "sendGpsInput(): error";
+    
+        return;
+    }
+    
+    SharedLinkInterfacePtr link = vehicleLinkManager()->primaryLink().lock();
+    if (!link) {
+        qCDebug(VehicleLog) << "sendGpsInput(): unable to obtain active link exclusive accessor";
+
+        return;
+    }
+
+    mavlink_message_t msg;
+    mavlink_gps_input_t gps_input = {};
+    
+    gps_input.time_usec = QGC::groundTimeUsecs();
+    gps_input.gps_id = 0;
+    gps_input.ignore_flags = 0;
+    gps_input.time_week_ms = 0;
+    gps_input.time_week = 0;
+    gps_input.fix_type = 3;
+    gps_input.lat = static_cast<int32_t>(_injectedPosition.latitude() * 1e7);
+    gps_input.lon = static_cast<int32_t>(_injectedPosition.longitude() * 1e7);
+    gps_input.alt = static_cast<float>(_injectedPosition.altitude());
+    gps_input.hdop = 0.8f;
+    gps_input.vdop = 0.8f;
+    gps_input.vn = 0.0f;
+    gps_input.ve = 0.0f;
+    gps_input.vd = 0.0f;
+    gps_input.speed_accuracy = 0.1f;
+    gps_input.horiz_accuracy = 0.5f;
+    gps_input.vert_accuracy = 0.5f;
+    gps_input.satellites_visible = 30;
+    
+    mavlink_msg_gps_input_encode(
+        id(),
+        MAV_COMP_ID_GPS,
+        &msg,
+        &gps_input
+    );
+    
+    qCDebug(VehicleLog) << "sendGpsInput(): sending message";
+
+    sendMessageOnLinkThreadSafe(link.get(), msg);
+}
+
+void Vehicle::stopGpsInjection()
+{
+    if (_gpsInjectionTimer) {
+        _gpsInjectionTimer->stop();
+    }
+    _injectedPosition = QGeoCoordinate();
+}
+
 // This will be called after our query started in doSetHome arrives
 void Vehicle::_doSetHomeTerrainReceived(bool success, QList<double> heights)
 {

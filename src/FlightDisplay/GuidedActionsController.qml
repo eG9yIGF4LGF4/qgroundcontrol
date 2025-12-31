@@ -59,6 +59,7 @@ Item {
     readonly property string vtolTransitionTitle:           qsTr("VTOL Transition")
     readonly property string roiTitle:                      qsTr("ROI")
     readonly property string setHomeTitle:                  qsTr("Set Home")
+    readonly property string setPositionTitle:              qsTr("Set Vehicle Position")
     readonly property string setEstimatorOriginTitle:       qsTr("Set Estimator origin")
     readonly property string setFlightMode:                 qsTr("Set Flight Mode")
     readonly property string changeHeadingTitle:            qsTr("Change Heading")
@@ -91,6 +92,7 @@ Item {
     readonly property string vtolTransitionMRMessage:           qsTr("Transition VTOL to multi-rotor flight.")
     readonly property string roiMessage:                        qsTr("Make the specified location a Region Of Interest.")
     readonly property string setHomeMessage:                    qsTr("Set vehicle home as the specified location. This will affect Return to Home position")
+    readonly property string setPositionMessage:                qsTr("Set vehicle position as the specified location")
     readonly property string setEstimatorOriginMessage:         qsTr("Make the specified location the estimator origin.")
     readonly property string setFlightModeMessage:              qsTr("Set the vehicle flight mode to %1").arg(_actionData)
     readonly property string changeHeadingMessage:              qsTr("Set the vehicle heading towards the specified location.")
@@ -127,6 +129,7 @@ Item {
     readonly property int actionMVArm:                      31
     readonly property int actionMVDisarm:                   32
     readonly property int actionChangeLoiterRadius:         33
+    readonly property int actionSetPosition:                34
 
 
 
@@ -161,6 +164,7 @@ Item {
     property bool showLandAbort:            _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
     property bool showGotoLocation:         _guidedActionsEnabled && _vehicleFlying
     property bool showSetHome:              _guidedActionsEnabled
+    property bool showSetPosition:          _guidedActionsEnabled
     property bool showGripper:              _initialConnectComplete ? _activeVehicle.hasGripper : false
     property bool showSetEstimatorOrigin:   _activeVehicle && !(_activeVehicle.sensorsPresentBits & Vehicle.SysStatusSensorGPS)
     property bool showChangeHeading:        _guidedActionsEnabled && _vehicleFlying
@@ -575,6 +579,11 @@ Item {
             confirmDialog.message = setHomeMessage
             confirmDialog.hideTrigger = Qt.binding(function() { return !showSetHome })
             break
+        case actionSetPosition:
+            confirmDialog.title = setPositionTitle
+            confirmDialog.message = setPositionMessage
+            confirmDialog.hideTrigger = Qt.binding(function() { return !showSetPosition })
+            break
         case actionSetEstimatorOrigin:
             confirmDialog.title = setEstimatorOriginTitle
             confirmDialog.message = setEstimatorOriginMessage
@@ -722,6 +731,9 @@ Item {
             break
         case actionSetHome:
             _activeVehicle.doSetHome(actionData)
+            break
+        case actionSetPosition:
+            _activeVehicle.doSetPosition(actionData)
             break
         case actionSetEstimatorOrigin:
             _activeVehicle.setEstimatorOrigin(actionData)

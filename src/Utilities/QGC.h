@@ -20,4 +20,15 @@ namespace QGC
     bool fuzzyCompare(double value1, double value2);
 
     quint32 crc32(const quint8 *src, unsigned len, unsigned state);
+
+    /**
+    * @brief Get the current ground time in microseconds.
+    * @note This does not have microsecond precision, it is limited to millisecond precision.
+    */
+    quint64 groundTimeUsecs();
+
+    /** @brief Get the current ground time in milliseconds */
+    quint64 groundTimeMilliseconds();
+
+
 }

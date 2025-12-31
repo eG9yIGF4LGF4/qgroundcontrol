@@ -728,6 +728,17 @@ FlightMap {
 
                     QGCButton {
                         Layout.fillWidth:   true
+                        text:               qsTr("Set vehicle position here")
+                        visible:            globals.guidedControllerFlyView.showSetPosition
+                        onClicked: {
+                            mapClickDropPanel.close()
+                            globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionSetPosition, mapClickCoord)
+                        }
+                    }
+                    
+
+                    QGCButton {
+                        Layout.fillWidth:   true
                         text:               qsTr("Set Estimator Origin")
                         visible:            globals.guidedControllerFlyView.showSetEstimatorOrigin
                         onClicked: {
