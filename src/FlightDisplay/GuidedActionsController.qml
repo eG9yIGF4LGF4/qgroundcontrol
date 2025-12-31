@@ -129,6 +129,7 @@ Item {
     readonly property int actionMVArm:                      31
     readonly property int actionMVDisarm:                   32
     readonly property int actionChangeLoiterRadius:         33
+    readonly property int actionSetPosition:                34
 
 
 

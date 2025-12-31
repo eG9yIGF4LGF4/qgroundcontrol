@@ -3706,11 +3706,15 @@ void Vehicle::doSetPosition(const QGeoCoordinate& coord)
 void Vehicle::sendGpsInput()
 {
     if (!_injectedPosition.isValid()) {
+        qCDebug(VehicleLog) << "sendGpsInput(): error";
+    
         return;
     }
     
     SharedLinkInterfacePtr link = vehicleLinkManager()->primaryLink().lock();
     if (!link) {
+        qCDebug(VehicleLog) << "sendGpsInput(): unable to obtain active link exclusive accessor";
+
         return;
     }
 
@@ -3743,6 +3747,8 @@ void Vehicle::sendGpsInput()
         &gps_input
     );
     
+    qCDebug(VehicleLog) << "sendGpsInput(): sending message";
+
     sendMessageOnLinkThreadSafe(link.get(), msg);
 }
 
