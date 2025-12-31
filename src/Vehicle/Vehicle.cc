@@ -3699,7 +3699,7 @@ void Vehicle::doSetPosition(const QGeoCoordinate& coord)
     if (!_gpsInjectionTimer) {
         _gpsInjectionTimer = new QTimer(this);
         connect(_gpsInjectionTimer, &QTimer::timeout, this, &Vehicle::sendGpsInput);
-        _gpsInjectionTimer->start(200); // Send at 5 Hz
+        _gpsInjectionTimer->start(100); // Send at 10 Hz
     }
 }
 
